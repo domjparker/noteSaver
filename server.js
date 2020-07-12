@@ -2,7 +2,7 @@
 const express = require("express");
 const fs= require("fs");
 const path = require("path");
-
+const util = require("util");
 
 
 
@@ -16,7 +16,7 @@ app.use(express.static("public"));
 
 
 // * this will act as my db.js file until modularized later.
-const util = require("util'");
+
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 const notesData = "./db/db.json";
@@ -26,12 +26,18 @@ class DB{
         try {
             const notesDataRaw = await readFileAsync(notesData,"utf8")
         return notesDataRaw ? JSON.parse(notesDataRaw) : []
-    } catch (e) {
-        console.log("error reading note in db.json")
+        } catch (e) {
+        console.log("error reading note/s in db.json")
+        }
     }
+    // do a saveNotes function
+
+    // do a deleteNote function
+
+    
 };
 
-
+const newDB = new DB()
 
 // ----------------------------==========
 // const dbJSON = [
@@ -62,15 +68,15 @@ app.get("/notes", function (req, res) {
 // * these are my data routes for taking and serving data - will be modularized to api.js later
 // Displays all notes
 app.get("/api/notes", async function(req, res) {
-    res.json(newDB.readNotes());
+    res.json(await newDB.readNotes());
 });
 
 // saves notes
 app.post("/api/notes", function(req, res) {
-    const newNote = req.body;
-    newNote.id = 
-    dbJSON.push(req.body);
-    res.send("note saved")
+//     const newNote = req.body;
+//     newNote.id = 
+//     dbJSON.push(req.body);
+//     res.send("note saved")
 });
 
 // app.delete("/api/notes/:id", function(req, res){
