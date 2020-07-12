@@ -26,15 +26,17 @@ class DB{
         try {
             const notesDataRaw = await readFileAsync(notesData,"utf8")
         return notesDataRaw ? JSON.parse(notesDataRaw) : []
-        } catch (e) {
-        console.log("error reading note/s in db.json")
+        } catch (err) {
+        console.log("error when reading note/s in db.json file ", err)
         }
     }
-    // do a saveNotes function
-
-    // do a deleteNote function
-
-    
+    async writeNotes(notesArray){
+        try {
+            await writeFileAsync(notesData,JSON.stringify(notesArray))
+        } catch (err) {
+            console.log("error when writing new db.json file ", err)
+        }
+    }
 };
 
 const newDB = new DB()
@@ -73,7 +75,15 @@ app.get("/api/notes", async function(req, res) {
 
 // saves notes
 app.post("/api/notes", function(req, res) {
-//     const newNote = req.body;
+    const newNote = req.body;
+    const currentNotesArray = await newDB.readNotes();
+    // if currentNotesArray
+
+
+
+
+
+
 //     newNote.id = 
 //     dbJSON.push(req.body);
 //     res.send("note saved")
