@@ -51,10 +51,6 @@ const newDB = new DB()
 //         "title":"Test Title TWO",
 //         "text":"Test text 2"
 //     },
-//     {
-//         "title":"Test Title THREE",
-//         "text":"Test text 3"
-//     }
 // ]
 
 
@@ -68,25 +64,33 @@ app.get("/notes", function (req, res) {
 });
 
 // * these are my data routes for taking and serving data - will be modularized to api.js later
-// Displays all notes
+// express sets up path and an async function that takes in request and response parameters.
 app.get("/api/notes", async function(req, res) {
+    // after the db.json file is read, all notes data from the json file is returned and delivered as a response to front end.
     res.json(await newDB.readNotes());
 });
 
-// saves notes
-app.post("/api/notes", function(req, res) {
+// express sets up path and an async function that takes in request and response parameters.
+app.post("/api/notes", async function(req, res) {
+    // body content of the request is assigned to variable newNote
     const newNote = req.body;
+    // db.json file is read, after which the data array is assigned to variable currentNotesArray.
     const currentNotesArray = await newDB.readNotes();
-    // if currentNotesArray
+    // if currentNotesArray is empty, assign id to newNote
+    if(currentNotesArray === []) {
+        // newNote.id = 1;
+        await newDB.writeNotes([newNote])
+        console.log("array was empty")
+    } else {
+        // if currentNotesArray not empty, read the id of the last object and assign it to a variable.
+        const lastObject = currentNotesArray[currentNotesArray.length - 1];
+        newNote.id = lastObject.id+1
+        // add one to that lastObjectID variable and assign that as an id value to new Note
+        console.log(newNote.id)
+        // then add newRes into spread (...) of currentNotesArray and write this to db.json.
 
-
-
-
-
-
-//     newNote.id = 
-//     dbJSON.push(req.body);
-//     res.send("note saved")
+    }
+    res.json(newNote)
 });
 
 // app.delete("/api/notes/:id", function(req, res){
@@ -95,11 +99,7 @@ app.post("/api/notes", function(req, res) {
 
 
 
-
-
-
-
-
 app.listen(PORT, function(){
     console.log("Listening on port " + PORT);
 })
+
