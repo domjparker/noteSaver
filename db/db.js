@@ -4,17 +4,23 @@ const util = require("util")
 const fs = require("fs")
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
-// give us a variable shortcut to the attached json file.
-const notesData = "db.json";
+const notesData = "./db/db.json";
 
 class DB{
     async readNotes(){
         try {
-            const notesDataRaw = await readFileAsync(notesData,"utf8")
+            const notesDataRaw = await readFileAsync(notesData,"utf8");
         return notesDataRaw ? JSON.parse(notesDataRaw) : []
-    } catch (e) {
-        console.log("error reading note in db.json")
+        } catch (err) {
+        console.log("error when reading note/s in db.json file ", err)
+        }
     }
-}
-
-module.exports = new DB();
+    async writeNotes(notesArray){
+        try {
+            await writeFileAsync(notesData,JSON.stringify(notesArray))
+        } catch (err) {
+            console.log("error when writing new db.json file ", err)
+        }
+    }
+};
+module.exports = new DB()
