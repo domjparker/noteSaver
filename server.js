@@ -53,28 +53,37 @@ app.get("/notes", function (req, res) {
 });
 
 // * these are my data routes for taking and serving data - will be modularized to api.js later
-// express sets up path and an async function that takes in request and response parameters.
+// express sets up path and an async function that takes in get request and response parameters.
 app.get("/api/notes", async function(req, res) {
     // after the db.json file is read, all notes data from the json file is returned and delivered as a response to front end.
     res.json(await newDB.readNotes());
 });
 
-// express sets up path and an async function that takes in request and response parameters.
+// express sets up path and an async function that takes in post request and response parameters.
 app.post("/api/notes", async function(req, res) {
     // body content of the request is assigned to variable newNote
     const newNote = req.body;
     // db.json file is read, after which the data array is assigned to variable currentNotesArray.
     const currentNotesArray = await newDB.readNotes();
-    // add uuid to newNote
+    // uuid is added as a key value to newNote
     newNote.id = uuid()
-    console.log(newNote)
+    // new note is combined with current array from db.json file and new db.json file is written with newNote included.
     await newDB.writeNotes([...currentNotesArray, newNote])
-    res.json(newNote)
+    res.json(await newDB.readNotes());
 });
 
-// app.delete("/api/notes/:id", function(req, res){
-//    var myId =  req.params.id
-// })
+// express sets up path and an async function that takes in delete request and response parameters
+app.delete("/api/notes/:id", async function(req, res){
+//  id of the note request for delete is assigned to variable noteId
+    const deleteNoteId =  req.params.id
+    // db.json file is read, after which the data array is assigned to variable currentNotesArray.
+    const currentNotesArray = await newDB.readNotes();
+    // i need to filter the currentNotesArray and make a new array with all objects except that with the noteID
+    const amendedArray = currentNotesArray.filter(note => note.id !== deleteNoteId)
+    // amended array is written to db.json file, with deleted note excluded.
+    await newDB.writeNotes(amendedArray)
+    res.json(await newDB.readNotes());
+})
 
 
 
