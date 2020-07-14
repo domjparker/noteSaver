@@ -3,6 +3,7 @@ const express = require("express");
 const fs= require("fs");
 const path = require("path");
 const util = require("util");
+const { uuid } = require('uuidv4');
 
 
 
@@ -24,7 +25,7 @@ const notesData = "./db/db.json";
 class DB{
     async readNotes(){
         try {
-            const notesDataRaw = await readFileAsync(notesData,"utf8")
+            const notesDataRaw = await readFileAsync(notesData,"utf8");
         return notesDataRaw ? JSON.parse(notesDataRaw) : []
         } catch (err) {
         console.log("error when reading note/s in db.json file ", err)
@@ -38,20 +39,8 @@ class DB{
         }
     }
 };
-
 const newDB = new DB()
 
-// ----------------------------==========
-// const dbJSON = [
-//     {
-//         "title":"Test Title ONE",
-//         "text":"Test text 1"
-//     },
-//     {
-//         "title":"Test Title TWO",
-//         "text":"Test text 2"
-//     },
-// ]
 
 
 // * these are the routes for serving up my html pages - need to be modularized to htmlroutes.js later
@@ -76,20 +65,10 @@ app.post("/api/notes", async function(req, res) {
     const newNote = req.body;
     // db.json file is read, after which the data array is assigned to variable currentNotesArray.
     const currentNotesArray = await newDB.readNotes();
-    // if currentNotesArray is empty, assign id to newNote
-    if(currentNotesArray === []) {
-        // newNote.id = 1;
-        await newDB.writeNotes([newNote])
-        console.log("array was empty")
-    } else {
-        // if currentNotesArray not empty, read the id of the last object and assign it to a variable.
-        const lastObject = currentNotesArray[currentNotesArray.length - 1];
-        newNote.id = lastObject.id+1
-        // add one to that lastObjectID variable and assign that as an id value to new Note
-        console.log(newNote.id)
-        // then add newRes into spread (...) of currentNotesArray and write this to db.json.
-
-    }
+    // add uuid to newNote
+    newNote.id = uuid()
+    console.log(newNote)
+    await newDB.writeNotes([...currentNotesArray, newNote])
     res.json(newNote)
 });
 
